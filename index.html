@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>同学位置地图</title>
+  <style>
+    #mapContainer {
+      width: 100%;
+      height: 100vh;
+      z-index: 1;
+    }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+    h1 {
+      text-align: center;
+      margin-top: 20px;
+      height: 60px; /* 调整标题高度 */
+      line-height: 60px;
+      z-index: 1000;
+    }
+    #sidebar {
+      position: absolute;
+      top: 100px; /* 调整为标题的高度 */
+      right: 20px;
+      z-index: 1000;
+      width: 300px; /* 增加宽度 */
+      height: calc(100vh - 120px); /* 调整为视口高度减去标题和底部空间 */
+      background: white;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      overflow-y: auto; /* 启用垂直滚动条 */
+    }
+    #sidebar h3 {
+      margin-top: 0;
+    }
+    #sidebar ul {
+      list-style: none;
+      padding: 0;
+    }
+    #sidebar li {
+      margin-bottom: 10px;
+      cursor: pointer;
+    }
+    @media (max-width: 768px) {
+  #sidebar {
+    width: 80px;
+    height: 25vh;
+    padding: 10px;
+    right: 10px;
+
+    /* 添加以下样式以实现文字居中 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  #sidebar h3 {
+    margin-bottom: 20px; /* 增加标题与列表之间的距离 */
+  }
+  #sidebar ul {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  #sidebar ul {
+    list-style: none;
+  }
+
+  #sidebar li {
+    margin-bottom: 10px;
+    cursor: pointer;
+    text-align: center;
+  }
+}
+  </style>
+</head>
+<body>
+  <h1>同学位置地图</h1>
+  <div id="sidebar">
+    <h3>班级同学</h3>
+    <ul id="studentList">
+      <!-- 同学姓名将动态插入到这里 -->
+    </ul>
+  </div>
+  <div id="mapContainer"></div>
+  <script src="https://api.map.baidu.com/api?v=3.0&ak=gje6PyhpAGDmQAooppGBXoPqQCyhyCmb"></script>
+  <script>
+    // 初始化地图
+    var map = new BMap.Map("mapContainer");
+    var point = new BMap.Point(116.404, 39.915);
+    map.centerAndZoom(point, 15);
+    map.enableScrollWheelZoom(true);
+
+    // 添加学生数据
+    var students = [
+    {
+        name: "陈瀚龙",
+        university: "北京航空航天大学",
+        contact: "13807209105",
+        position: new BMap.Point(116.27718508, 40.15935373)
+    },
+    {
+        name: "丁若璇",
+        university: "南京大学",
+        contact: "13908606727",
+        position: new BMap.Point(118.96608957, 32.12872272)
+    },
+    {
+        name: "范李子恒",
+        university: "清华大学",
+        contact: "18871771742",
+        position: new BMap.Point(116.33359255, 40.00889981)
+    },
+    {
+        name: "范润秋",
+        university: "北京大学",
+        contact: "17764251027",
+        position: new BMap.Point(116.32117195, 39.99816284)
+    },
+    {
+        name: "高凌松",
+        university: "武汉大学",
+        contact: "15672503678",
+        position: new BMap.Point(114.36540676131, 30.543663829353)
+    },
+    {
+        name: "胡博文",
+        university: "北京大学",
+        contact: "15090858282",
+        position: new BMap.Point(116.3237861, 39.99884293)
+    },
+    {
+        name: "姜佳宜",
+        university: "华中科技大学",
+        contact: "13972516469",
+        position: new BMap.Point(114.41725, 30.518824)
+    },
+    {
+        name: "李文凯",
+        university: "中国科学院大学",
+        contact: "13997688079",
+        position: new BMap.Point(116.25717253, 39.91457826)
+    },
+    {
+        name: "李晓睿",
+        university: "中国科学技术大学",
+        contact: "15872507708",
+        position: new BMap.Point(117.275926, 31.842)
+    },
+    {
+        name: "李跃嘉",
+        university: "武汉大学",
+        contact: "15272161950",
+        position: new BMap.Point(114.36487298, 30.54781813)
+    },
+    {
+        name: "廖卓然",
+        university: "上海交通大学",
+        contact: "15971621841",
+        position: new BMap.Point(121.44980054, 31.03391922)
+    },
+    {
+        name: "刘辅君",
+        university: "上海交通大学",
+        contact: "13872669972",
+        position: new BMap.Point(121.4383766, 31.03092206)
+    },
+    {
+        name: "刘思海",
+        university: "华中科技大学",
+        contact: "13308602569",
+        position: new BMap.Point(114.41912416, 30.51914585)
+    },
+    {
+        name: "刘昱宏",
+        university: "上海交通大学",
+        contact: "13972002566",
+        position: new BMap.Point(121.44508036, 31.03459718)
+    },
+    {
+        name: "龙宇攀",
+        university: "上海交通大学",
+        contact: "15587654567",
+        position: new BMap.Point(121.4367702072, 31.027889346799)
+    },
+    {
+        name: "皮欣怡",
+        university: "中国人民大学",
+        contact: "13507200108",
+        position: new BMap.Point(116.31509652, 39.9776087)
+    },
+    {
+        name: "屈冠行",
+        university: "北京航空航天大学",
+        contact: "15342458280",
+        position: new BMap.Point(116.2779, 40.1590)
+    },
+    {
+        name: "石洛麟",
+        university: "清华大学",
+        contact: "18808606704",
+        position: new BMap.Point(116.33655942, 40.011248)
+    },
+    {
+        name: "舒宇卓",
+        university: "中国科学院大学",
+        contact: "13986745768",
+        position: new BMap.Point(116.25732209598, 39.914576800953)
+    },
+    {
+        name: "覃耀纬",
+        university: "北京大学",
+        contact: "13886743036",
+        position: new BMap.Point(116.32118459516, 39.996813374025)
+    },
+    {
+        name: "王振宇",
+        university: "武汉大学",
+        contact: "18727283362",
+        position: new BMap.Point(114.36712332, 30.54589028)
+    },
+    {
+        name: "谢江天",
+        university: "复旦大学",
+        contact: "15971647110",
+        position: new BMap.Point(121.512205, 31.305494)
+    },
+    {
+        name: "熊雨萧",
+        university: "上海交通大学",
+        contact: "15871624425",
+        position: new BMap.Point(120.13097184, 30.27305951)
+    },
+    {
+        name: "徐晨茜",
+        university: "华中科技大学",
+        contact: "13972023832",
+        position: new BMap.Point(114.414145, 30.516245)
+    },
+    {
+        name: "徐梓晋",
+        university: "北京航空航天大学",
+        contact: "18995870257",
+        position: new BMap.Point(116.27563221905, 40.157001217862)
+    },
+    {
+        name: "尹婧妍",
+        university: "北京大学",
+        contact: "13247285911",
+        position: new BMap.Point(116.32132286, 39.99631963)
+    },
+    {
+        name: "张家鸣",
+        university: "中国科学院大学",
+        contact: "18807204510",
+        position: new BMap.Point(116.25710273091, 39.914555244688)
+    },
+    {
+        name: "章姜俊杰",
+        university: "华中科技大学",
+        contact: "13687179755",
+        position: new BMap.Point(114.41601, 30.51812)
+    },
+    {
+        name: "张欣阳",
+        university: "华中科技大学",
+        contact: "18771825738",
+        position: new BMap.Point(114.41983686, 30.51930167)
+    },
+    {
+        name: "张万玺",
+        university: "清华大学",
+        contact: "18986761115",
+        position: new BMap.Point(116.3266771, 40.01082896)
+    },
+    {
+        name: "张跃珅",
+        university: "华中科技大学",
+        contact: "18771777985",
+        position: new BMap.Point(114.42202331048, 30.518977666322)
+    },
+    {
+        name: "赵文博",
+        university: "南京大学",
+        contact: "16671001903",
+        position: new BMap.Point(118.96286582, 32.12686178)
+    },
+    {
+        name: "周有朋",
+        university: "复旦大学",
+        contact: "13032729948",
+        position: new BMap.Point(121.509314, 31.304)
+    }
+];
+
+    // 动态生成侧边栏列表
+    var studentList = document.getElementById("studentList");
+    students.forEach(function(student) {
+      var li = document.createElement("li");
+      li.innerHTML = student.name;
+      li.style.cursor = "pointer";
+      li.onclick = function() {
+        map.centerAndZoom(student.position, 15);
+        var infoWindow = new BMap.InfoWindow(
+          "姓名：" + student.name + "<br>" +
+          "大学：" + student.university + "<br>" +
+          "联系方式：" + student.contact
+        );
+        map.openInfoWindow(infoWindow, student.position);
+      };
+      studentList.appendChild(li);
+    });
+
+    // 添加标注
+    students.forEach(function(student) {
+      var marker = new BMap.Marker(student.position);
+      map.addOverlay(marker);
+      var infoWindow = new BMap.InfoWindow(
+        "姓名：" + student.name + "<br>" +
+        "大学：" + student.university + "<br>" +
+        "联系方式：" + student.contact
+      );
+      marker.addEventListener("click", function() {
+        map.openInfoWindow(infoWindow, marker.getPosition());
+      });
+    });
+  </script>
+</body>
+</html>
