@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>同学位置地图</title>
+  <title>2121蹭饭地图</title>
   <style>
     #mapContainer {
       width: 100%;
@@ -81,11 +81,15 @@
   </style>
 </head>
 <body>
-  <h1>同学位置地图</h1>
+  <h1>2121蹭饭地图</h1>
   <div id="sidebar">
     <h3>班级同学</h3>
     <ul id="studentList">
       <!-- 同学姓名将动态插入到这里 -->
+    </ul>
+    <h3>班级老师</h3>
+    <ul id="teacherList">
+      <!-- 老师姓名和联系方式将动态插入到这里 -->
     </ul>
   </div>
   <div id="mapContainer"></div>
@@ -110,6 +114,11 @@
         university: "南京大学",
         contact: "13908606727",
         position: new BMap.Point(118.96608957, 32.12872272)
+    },
+    {
+        name: "戴欣怡",
+        university: "华中科技大学",
+        position: new BMap.Point(114.413745, 30.516345)
     },
     {
         name: "范李子恒",
@@ -316,7 +325,80 @@
       };
       studentList.appendChild(li);
     });
+   
+    var teachers = [
+      {
+        name: "杨勇",
+        contact: "13487267599",
+        position: new BMap.Point(111.248708,30.711145)
+      },
+      {
+        name: "张敏",
+        contact: "13986785247",
+        position: new BMap.Point(111.247109,30.709895)
+      },
+      {
+        name: "余信欢",
+        contact: "15971664686",
+        position: new BMap.Point(111.246489,30.710183)
+      },
+      {
+        name: "谭琦",
+        contact: "15171889319",
+        position: new BMap.Point(111.247406,30.709938)
+      },
+      {
+        name: "王宝玉",
+        contact: "15997671488",
+        position: new BMap.Point(111.24763,30.709996)
+      },
+      {
+        name: "王苗郁",
+        contact: "13407120637",
+        position: new BMap.Point(111.247693,30.709802)
+      },
+    ];
+    var teacherList = document.getElementById("teacherList");
+    teachers.forEach(function(teacher) {
+      var li = document.createElement("li");
+      li.innerHTML = teacher.name;
+      li.style.cursor = "pointer";
+      li.onclick = function() {
+        map.centerAndZoom(teacher.position, 15);
+        var infoWindow = new BMap.InfoWindow(
+          "姓名：" + teacher.name + "<br>" +
+          "联系方式：" + teacher.contact
+        );
+        map.openInfoWindow(infoWindow, teacher.position);
+      };
+      teacherList.appendChild(li);
+    });
 
+    // 隐藏老师列表
+    teacherList.style.display = "none";
+
+    // 监听滚动事件，当同学列表滚动到底部时显示老师列表
+    var sidebar = document.getElementById("sidebar");
+    sidebar.addEventListener("scroll", function() {
+      var sidebarHeight = sidebar.scrollHeight;
+      var scrollTop = sidebar.scrollTop;
+      var clientHeight = sidebar.clientHeight;
+
+      if (scrollTop + clientHeight >= sidebarHeight - 10) {
+        teacherList.style.display = "block";
+      }
+    });
+    teachers.forEach(function(teacher) {
+      var marker = new BMap.Marker(teacher.position);
+      map.addOverlay(marker);
+      var infoWindow = new BMap.InfoWindow(
+        "姓名：" + teacher.name + "<br>" +
+        "联系方式：" + teacher.contact
+     );
+      marker.addEventListener("click", function() {
+      map.openInfoWindow(infoWindow, marker.getPosition());
+    });
+  });
     // 添加标注
     students.forEach(function(student) {
       var marker = new BMap.Marker(student.position);
@@ -330,6 +412,7 @@
         map.openInfoWindow(infoWindow, marker.getPosition());
       });
     });
+    
   </script>
 </body>
 </html>
